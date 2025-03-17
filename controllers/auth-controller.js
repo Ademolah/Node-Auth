@@ -85,7 +85,7 @@ const loginUser = async (req, res)=>{
             userId: user._id,
             username: user.username,
             role: user.role
-        }, process.env.JWT_SECRET_KEY, {expiresIn: '15m'})
+        }, process.env.JWT_SECRET_KEY, {expiresIn: '20m'})
 
 
         res.status(200).json({

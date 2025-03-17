@@ -1,5 +1,5 @@
 const express = require('express')
-const {uploadImage} = require('../controllers/image-controller.js')
+const {uploadImage, fetchImages} = require('../controllers/image-controller.js')
 const authMiddleware = require('../middleware/auth-middleware.js')
 const adminMiddleware = require('../middleware/admin-middleware.js')
 const uploadMiddleware = require('../middleware/upload-middleware.js')
@@ -12,7 +12,7 @@ router.post('/uploadImage',authMiddleware,adminMiddleware,uploadMiddleware.singl
 
 
 //get images
-router.get('/getImages', authMiddleware,)
+router.get('/getImages', authMiddleware, fetchImages)
 
 
 
