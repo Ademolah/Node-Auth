@@ -109,6 +109,7 @@ const changePassword = async (req, res)=>{
         const {oldPassword, newPassword} = req.body
 
         const user = await User.findById(userId)
+        console.log(userId)
 
         if(!user){
             return res.status(404).json({
@@ -118,24 +119,23 @@ const changePassword = async (req, res)=>{
         }
 
         //compare old and new password
-        const comparePassword = bcrypt.compare(oldPassword, newPassword)
+        const checkCurrentPassword = await bcrypt.compare(oldPassword, user.password)
 
-        if(comparePassword){
-            res.status(400).json({
+        if(!checkCurrentPassword){
+            return res.status(400).json({
                 success: false,
-                message: "Old password and new password can't be the same"
+                message: "Pasword does not match with current password"
             })
         }
         
-        //verify old password
-        const isPasswordMatch = bcrypt.compare(oldPassword, user.password)
-
-        if(!isPasswordMatch){
+        //check if old and new password are same
+        if(newPassword === oldPassword){
             return res.status(400).json({
                 success: false,
-                message: "Inavlid current password"
+                message: "Old password cannot be the same as new password"
             })
         }
+        
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(newPassword, salt)
@@ -157,4 +157,20 @@ const changePassword = async (req, res)=>{
     }
 }
 
-module.exports =  {registerUser, loginUser, changePassword}
+const fetchUsers = async (req, res)=>{
+    try {
+        const users = await User.find({})
+
+        res.status(200).json({
+            success: true,
+            data: users
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Invalid username or password'
+        })
+    }
+}
+
+module.exports =  {registerUser, loginUser, changePassword, fetchUsers}
