@@ -159,10 +159,28 @@ const changePassword = async (req, res)=>{
 
 const fetchUsers = async (req, res)=>{
     try {
-        const users = await User.find({})
+        //add pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page -1) * limit
+
+        //sorting
+        const sortBy = req.query.sortBy || 'createdAt'
+        const sortOrder = req.query.sortOrder === 'asc'? 1 : -1;
+        const totalUsers = await User.countDocuments()
+        const totalPages = Math.ceil(totalUsers/limit)
+
+        const sortObj = {}
+        sortObj[sortBy] = sortOrder
+
+
+        const users = await User.find().sort(sortObj).skip(skip).limit(limit)
 
         res.status(200).json({
             success: true,
+            page: page,
+            totalPages: totalPages,
+            totalUsers: totalUsers,
             data: users
         })
     } catch (error) {
